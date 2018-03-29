@@ -1,5 +1,5 @@
 import React from 'react';
-import Bookshelf from './Bookshelf'
+import Library from './Library'
 import './App.css';
 
 class BooksApp extends React.Component {
@@ -58,20 +58,24 @@ class BooksApp extends React.Component {
   render() {
     return (
       <div className="app">
-        <Bookshelf
-          title={"Currently Reading"}
+        <Library
+          title={"MyReads"}
           onChangeShelf={this.updateShelf}
-          books={this.state.books.filter((book) => (book.shelf === 'currentlyReading'))}
-        />
-        <Bookshelf
-          title={"Want to Read"}
-          onChangeShelf={this.updateShelf}
-          books={this.state.books.filter((book) => (book.shelf === 'wantToRead'))}
-        />
-        <Bookshelf
-          title={"Read"}
-          onChangeShelf={this.updateShelf}
-          books={this.state.books.filter((book) => (book.shelf === 'read'))}
+          books={this.state.books}
+          shelves={[
+            {
+              id: 'currentlyReading',
+              title: 'Currently Reading'
+            },
+            {
+              id: 'wantToRead',
+              title: 'Want to Read'
+            },
+            {
+              id: 'read',
+              title: 'Read'
+            },
+          ]}
         />
       </div>
     );
