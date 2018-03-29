@@ -1,5 +1,5 @@
 import React from 'react';
-import BooksGrid from './BooksGrid'
+import Bookshelf from './Bookshelf'
 import './App.css';
 
 class BooksApp extends React.Component {
@@ -58,9 +58,20 @@ class BooksApp extends React.Component {
   render() {
     return (
       <div className="app">
-        <BooksGrid
-          books={this.state.books}
+        <Bookshelf
+          title={"Currently Reading"}
           onChangeShelf={this.updateShelf}
+          books={this.state.books.filter((book) => (book.shelf === 'currentlyReading'))}
+        />
+        <Bookshelf
+          title={"Want to Read"}
+          onChangeShelf={this.updateShelf}
+          books={this.state.books.filter((book) => (book.shelf === 'wantToRead'))}
+        />
+        <Bookshelf
+          title={"Read"}
+          onChangeShelf={this.updateShelf}
+          books={this.state.books.filter((book) => (book.shelf === 'read'))}
         />
       </div>
     );
