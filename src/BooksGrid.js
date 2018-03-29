@@ -1,7 +1,7 @@
 import React from 'react'
 import Book from './Book'
 
-function BooksGrid (props) {
+function BooksGrid(props) {
   return (
     <ol className="books-grid">
     {props.books.map((book) =>
