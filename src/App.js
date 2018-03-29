@@ -1,5 +1,5 @@
 import React from 'react';
-import Book from './Book'
+import BooksGrid from './BooksGrid'
 import './App.css';
 
 class BooksApp extends React.Component {
@@ -58,8 +58,8 @@ class BooksApp extends React.Component {
   render() {
     return (
       <div className="app">
-        <Book
-          book={this.state.books[0]}
+        <BooksGrid
+          books={this.state.books}
           onChangeShelf={this.updateShelf}
         />
       </div>
