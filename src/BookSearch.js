@@ -1,8 +1,14 @@
 import React from 'react';
 import BooksGrid from './BooksGrid';
-import escapeRegExp from 'escape-string-regexp'
+import escapeRegExp from 'escape-string-regexp';
+import PropTypes from 'prop-types';
 
 class BookSearch extends React.Component {
+
+  static propTypes = {
+    onChangeShelf: PropTypes.func.isRequired,
+    books: PropTypes.array
+  }
 
   state = {
     query: ''
