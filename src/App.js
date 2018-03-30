@@ -1,5 +1,5 @@
 import React from 'react';
-import Library from './Library'
+import Library from './Library';
 import './App.css';
 
 class BooksApp extends React.Component {
