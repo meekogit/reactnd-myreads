@@ -46,13 +46,10 @@ class BooksApp extends React.Component {
 
   updateShelf = (bookId, shelf) => {
     this.setState((state) => ({
-      books: state.books.map((book) => {
-        if (book.id === bookId) {
-          book.shelf = shelf;
-        }
-        return book;
-      })
-    }));
+      books: state.books.map((book) => (
+        book.id === bookId ? {...book, shelf:`${shelf}`} : book
+      ))
+    }))
   };
 
   render() {
