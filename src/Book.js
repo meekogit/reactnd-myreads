@@ -7,7 +7,7 @@ function Book(props) {
       <div className="book-top">
         <div className="book-cover" style={{ width: 128, height: 192, backgroundImage: `url(${props.book.cover})`}}></div>
         <div className="book-shelf-changer">
-          <select value={props.book.shelf} onChange={(e) => props.onChangeShelf(props.book.id, e.target.value)}>
+          <select value={props.book.shelf} onChange={(e) => props.onChangeShelf({...props.book, shelf: e.target.value })}>
             <option disabled>Move to...</option>
             <option value="currentlyReading">Currently Reading</option>
             <option value="wantToRead">Want to Read</option>

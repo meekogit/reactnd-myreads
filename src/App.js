@@ -59,12 +59,33 @@ class BooksApp extends React.Component {
     title: 'Read'
   }];
 
-  updateShelf = (bookId, shelf) => {
+
+  removeBook = (book) => {
     this.setState((state) => ({
-      books: state.books.map((book) => (
-        book.id === bookId ? {...book, shelf:`${shelf}`} : book
-      ))
-    }))
+      books: state.books.filter((b) => (book.id !== b.id))
+    }));
+  };
+
+  addBook = (book) => {
+    this.setState((state) => ({ books: [...state.books, book] }));
+  };
+
+  updateBook = (book) => {
+    this.setState((state) => ({
+      books: state.books.map((b) => (book.id === b.id) ? book : b )
+    }));
+  }
+
+  updateLibrary = (book) => {
+    if (book.shelf === 'none') {
+      this.removeBook(book);
+    } else {
+      if (this.state.books.find((b) => b.id === book.id)) {
+        this.updateBook(book);
+      } else {
+        this.addBook(book);
+      }
+    }
   };
 
   render() {
@@ -72,13 +93,13 @@ class BooksApp extends React.Component {
       <div className="app">
       {this.state.showSearchPage ? (
         <BookSearch
-          onChangeShelf={this.updateShelf}
+          onChangeShelf={this.updateLibrary}
           books={this.state.books}
         />
       ) : (
         <Library
           title={"MyReads"}
-          onChangeShelf={this.updateShelf}
+          onChangeShelf={this.updateLibrary}
           books={this.state.books}
           shelves={this.shelves}
         />
