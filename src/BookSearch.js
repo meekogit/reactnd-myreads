@@ -8,6 +8,20 @@ class BookSearch extends React.Component {
     query: ''
   };
 
+  apiBooks = [
+    {
+      id: '1',
+      title: 'API:To Kill a Mockingbird',
+      authors: ['Harper Lee'],
+      cover: 'http://books.google.com/books/content?id=PGR2AwAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73-GnPVEyb7MOCxDzOYF1PTQRuf6nCss9LMNOSWBpxBrz8Pm2_mFtWMMg_Y1dx92HT7cUoQBeSWjs3oEztBVhUeDFQX6-tWlWz1-feexS0mlJPjotcwFqAg6hBYDXuK_bkyHD-y&source=gbs_api',
+    },
+    {
+      id: '6',
+      title: 'API:Robin Hood',
+      authors: ['Henry Gilbert'],
+    }
+  ];
+
   updateQuery = (query) => {
     this.setState({ query: query.replace(/\s+/g, ' ') });
   };
@@ -19,11 +33,29 @@ class BookSearch extends React.Component {
     ));
   };
 
-  searchBooks = () => ((this.state.query) ? this.filterBooks(this.props.books) : []);
+  // Simulated API fetch
+  searchBookApi = () => (this.filterBooks(this.apiBooks));
+
+  findBook = (id, books) => (books.find((book) => id === book.id));
+
+  setShelf = (book, shelf='none') => ({...book, shelf: shelf});
+
+  parseBooks = (searchResults) => {
+
+    let filteredLibrary = this.filterBooks(this.props.books);
+
+    return searchResults.map((book) => {
+      let found = this.findBook(book.id, filteredLibrary);
+      return found ? this.setShelf(book, found.shelf) : this.setShelf(book)
+    });
+  }
+
+  searchBooks = () => {
+    let results = this.searchBookApi();
+    return (results) ? this.parseBooks(results) : [];
+  };
 
   render() {
-    let searchResults = this.searchBooks();
-
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -38,7 +70,7 @@ class BookSearch extends React.Component {
         </div>
         <div className="search-books-results">
           <BooksGrid
-            books={searchResults}
+            books={this.state.query ? this.searchBooks() : []}
             onChangeShelf={this.props.onChangeShelf}
           />
         </div>
