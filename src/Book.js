@@ -31,6 +31,6 @@ Book.propTypes = {
     shelf: PropTypes.string.isRequired
   }).isRequired,
   onChangeShelf: PropTypes.func.isRequired
-}
+};
 
 export default Book;
