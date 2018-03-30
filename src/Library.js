@@ -1,5 +1,6 @@
 import React from 'react';
 import Bookshelf from './Bookshelf';
+import PropTypes from 'prop-types';
 
 function Library(props) {
   return (
@@ -21,6 +22,17 @@ function Library(props) {
       </div>
     </div>
   );
+}
+
+Library.propTypes = {
+  title: PropTypes.string.isRequired,
+  books: PropTypes.array.isRequired,
+  shelves: PropTypes.arrayOf(PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      title: PropTypes.string
+    })
+  ),
+  onChangeShelf: PropTypes.func
 }
 
 export default Library;
