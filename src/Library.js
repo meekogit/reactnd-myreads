@@ -1,6 +1,7 @@
 import React from 'react';
 import Bookshelf from './Bookshelf';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 function Library(props) {
   return (
@@ -21,7 +22,7 @@ function Library(props) {
         </div>
       </div>
       <div className="open-search">
-        <a className="open-search">Add Book</a>
+        <Link to="/search">Add Book</Link>
       </div>
     </div>
   );

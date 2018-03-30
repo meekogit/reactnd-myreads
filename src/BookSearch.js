@@ -2,6 +2,7 @@ import React from 'react';
 import BooksGrid from './BooksGrid';
 import escapeRegExp from 'escape-string-regexp';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 class BookSearch extends React.Component {
 
@@ -65,7 +66,7 @@ class BookSearch extends React.Component {
     return (
       <div className="search-books">
         <div className="search-books-bar">
-          <a className="close-search">Close</a>
+          <Link className="close-search" to="/">Close</Link>
           <div className="search-books-input-wrapper">
             <input value={this.state.query}
               type="text"
