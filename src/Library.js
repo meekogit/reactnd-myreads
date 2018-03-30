@@ -11,6 +11,7 @@ function Library(props) {
         <div>
           {props.shelves.map((shelf) =>
               <Bookshelf
+                key={shelf.id}
                 title={shelf.title}
                 onChangeShelf={props.onChangeShelf}
                 books={props.books.filter((book) => (book.shelf === shelf.id))}
