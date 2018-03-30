@@ -20,6 +20,9 @@ function Library(props) {
           )}
         </div>
       </div>
+      <div className="open-search">
+        <a className="open-search">Add Book</a>
+      </div>
     </div>
   );
 }
