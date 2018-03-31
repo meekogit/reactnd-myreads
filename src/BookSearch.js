@@ -3,6 +3,7 @@ import BooksGrid from './BooksGrid';
 import escapeRegExp from 'escape-string-regexp';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import * as BooksAPI from './BooksAPI'
 
 class BookSearch extends React.Component {
 
@@ -12,25 +13,31 @@ class BookSearch extends React.Component {
   }
 
   state = {
-    query: ''
+    query: '',
+    bookResults: [],
+    searchStatus: 'waiting'
   };
 
-  apiBooks = [
-    {
-      id: '1',
-      title: 'API:To Kill a Mockingbird',
-      authors: ['Harper Lee'],
-      cover: 'http://books.google.com/books/content?id=PGR2AwAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73-GnPVEyb7MOCxDzOYF1PTQRuf6nCss9LMNOSWBpxBrz8Pm2_mFtWMMg_Y1dx92HT7cUoQBeSWjs3oEztBVhUeDFQX6-tWlWz1-feexS0mlJPjotcwFqAg6hBYDXuK_bkyHD-y&source=gbs_api',
-    },
-    {
-      id: '6',
-      title: 'API:Robin Hood',
-      authors: ['Henry Gilbert'],
-    }
-  ];
-
   updateQuery = (query) => {
+
     this.setState({ query: query.replace(/\s+/g, ' ') });
+
+    if (query === '') {
+      this.setState({ bookResults: [], status: 'waiting' });
+    } else {
+      this.setState({ status: 'searching' });
+      BooksAPI.search(query).then((response) => {
+        this.setState((state, props) => {
+          let filteredBooks = [];
+          let status = 'error';
+          if (!response.error) {
+            filteredBooks = this.parseBooks(response, props.books);
+            status = 'ready';
+          }
+          return ({ bookResults: filteredBooks, status: status });
+        });
+      });
+    }
   };
 
   filterBooks = (books) => {
@@ -40,35 +47,30 @@ class BookSearch extends React.Component {
     ));
   };
 
-  // Simulated API fetch
-  searchBookApi = () => (this.filterBooks(this.apiBooks));
-
   findBook = (id, books) => (books.find((book) => id === book.id));
 
   setShelf = (book, shelf='none') => ({...book, shelf: shelf});
 
-  parseBooks = (searchResults) => {
-
-    let filteredLibrary = this.filterBooks(this.props.books);
-
+  parseBooks = (searchResults, libraryBooks) => {
+    const filteredLibrary = this.filterBooks(libraryBooks);
     return searchResults.map((book) => {
       let found = this.findBook(book.id, filteredLibrary);
-      return found ? this.setShelf(book, found.shelf) : this.setShelf(book)
+      return found ? this.setShelf(book, found.shelf) : this.setShelf(book, 'none')
     });
   }
 
-  searchBooks = () => {
-    let results = this.searchBookApi();
-    return (results) ? this.parseBooks(results) : [];
-  };
+  searching = <div className="searching-animation">Searching...</div>;
+  noResultsFound = <div className="searching-animation">No Results</div>;
 
   render() {
+    const { query, bookResults, status } = this.state;
+    const onChangeShelf = this.props.onChangeShelf;
     return (
       <div className="search-books">
         <div className="search-books-bar">
           <Link className="close-search" to="/">Close</Link>
           <div className="search-books-input-wrapper">
-            <input value={this.state.query}
+            <input value={query}
               type="text"
               placeholder="Search by title or author"
               onChange={(event) => this.updateQuery(event.target.value)}
@@ -76,10 +78,16 @@ class BookSearch extends React.Component {
           </div>
         </div>
         <div className="search-books-results">
-          <BooksGrid
-            books={this.state.query ? this.searchBooks() : []}
-            onChangeShelf={this.props.onChangeShelf}
-          />
+          { (status === 'searching') ? (
+            this.searching
+          ) : (status === 'error') ? (
+            this.noResultsFound
+          ) : (
+            <BooksGrid
+              books={bookResults}
+              onChangeShelf={onChangeShelf}
+            />
+          )}
         </div>
       </div>
     );
