@@ -59,6 +59,12 @@ class BookSearch extends React.Component {
     });
   }
 
+  componentWillReceiveProps = (nextProps) => {
+    this.setState((state, props) => (
+      { bookResults: this.parseBooks(state.bookResults, nextProps.books) })
+    );
+  };
+
   searching = <div className="searching-animation">Searching...</div>;
   noResultsFound = <div className="searching-animation">No Results</div>;
 
