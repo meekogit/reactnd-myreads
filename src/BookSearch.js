@@ -15,7 +15,7 @@ class BookSearch extends React.Component {
   state = {
     query: '',
     bookResults: [],
-    searchStatus: 'waiting'
+    status: 'waiting'
   };
 
   updateQuery = (query) => {
@@ -28,12 +28,19 @@ class BookSearch extends React.Component {
       this.setState({ status: 'searching' });
       BooksAPI.search(query).then((response) => {
         this.setState((state, props) => {
+
           let filteredBooks = [];
-          let status = 'error';
-          if (!response.error) {
+          let status = '';
+          // Check if query was cleared while fetching books
+          if (state.query === '')
+            status = 'waiting';
+          else if (response.error) {
+            status = 'error';
+          } else {
             filteredBooks = this.parseBooks(response, props.books);
             status = 'ready';
           }
+
           return ({ bookResults: filteredBooks, status: status });
         });
       });
@@ -71,6 +78,7 @@ class BookSearch extends React.Component {
   render() {
     const { query, bookResults, status } = this.state;
     const onChangeShelf = this.props.onChangeShelf;
+
     return (
       <div className="search-books">
         <div className="search-books-bar">
