@@ -25,6 +25,7 @@ class BooksApp extends React.Component {
     title: 'Read'
   }];
 
+  findBook = (book, shelf) => ( shelf && shelf.find((id) => (book.id === id)));
 
   removeBook = (book) => {
     this.setState((state) => ({
@@ -36,22 +37,29 @@ class BooksApp extends React.Component {
     this.setState((state) => ({ books: [...state.books, book] }));
   };
 
-  updateBook = (book) => {
+  updateBook = (book, shelf) => {
     this.setState((state) => ({
-      books: state.books.map((b) => (book.id === b.id) ? book : b )
+      books: state.books.map((b) => (book.id === b.id) ? {...book, shelf: shelf} : b )
     }));
   }
 
-  updateLibrary = (book) => {
-    if (book.shelf === 'none') {
-      this.removeBook(book);
-    } else {
-      if (this.state.books.find((b) => b.id === book.id)) {
-        this.updateBook(book);
+  updateLibrary = (book, shelf) => {
+    BookAPI.update(book, shelf).then((response) => {
+
+      const oldShelf = book.shelf;
+      const foundInOdlShelf = this.findBook(book, response[oldShelf]);
+      const foundInNewShelf = this.findBook(book, response[shelf]);
+
+      if (shelf === 'none' && !foundInOdlShelf) {
+        this.removeBook(book);
+      } else if (oldShelf === 'none' && foundInNewShelf) {
+        this.addBook({...book, shelf: shelf });
+      } else if (!foundInOdlShelf && foundInNewShelf){
+        this.updateBook(book, shelf);
       } else {
-        this.addBook(book);
+        console.log(`Error occurred while updating ${book.title}!`);
       }
-    }
+    });
   };
 
   loadBooks = (books=[]) => this.setState({ books, loading: false });
