@@ -2,7 +2,7 @@ import React from 'react';
 import Library from './Library';
 import BookSearch from './BookSearch';
 import { Route } from 'react-router-dom';
-import * as BookAPI from './BooksAPI';
+import * as BooksAPI from './BooksAPI';
 import './App.css';
 
 class BooksApp extends React.Component {
@@ -44,7 +44,7 @@ class BooksApp extends React.Component {
   }
 
   updateLibrary = (book, shelf) => {
-    BookAPI.update(book, shelf).then((response) => {
+    BooksAPI.update(book, shelf).then((response) => {
 
       const oldShelf = book.shelf;
       const foundInOdlShelf = this.findBook(book, response[oldShelf]);
@@ -66,7 +66,7 @@ class BooksApp extends React.Component {
 
   componentDidMount = () => {
     this.setState({ loading: true });
-    BookAPI.getAll().then((books) => {
+    BooksAPI.getAll().then((books) => {
       //TODO: check if getAll failed and inform the user
       this.loadBooks(books);
     });
