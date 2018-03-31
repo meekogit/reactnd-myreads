@@ -6,7 +6,7 @@ function Book(props) {
   const onChangeShelf = props.onChangeShelf;
   const book = props.book;
   const { title, authors, shelf } = props.book;
-  const { thumbnail, smallThumbnail } = props.book.imageLinks;
+  const { thumbnail='' , smallThumbnail='' } = props.book.imageLinks || {};
 
   return (
     <div className="book">
