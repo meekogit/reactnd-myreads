@@ -7,9 +7,16 @@ import './App.css';
 
 class BooksApp extends React.Component {
 
+  NOTIFY = {
+      standby: { id: 'standby', message: 'No requests being made'},
+      loading: { id: 'loading', message: 'Loading books'},
+      loaded: { id: 'loaded', message: 'Books successfully loaded'},
+      fetchError: { id: 'fetch-error', message: 'Book fetch failed'},
+  };
+
   state ={
     books: [],
-    loading: false
+    status: this.NOTIFY.standby
   };
 
   shelves = [{
@@ -62,10 +69,10 @@ class BooksApp extends React.Component {
     });
   };
 
-  loadBooks = (books=[]) => this.setState({ books, loading: false });
+  loadBooks = (books=[]) => this.setState({ books, status: this.NOTIFY.loaded });
 
   componentDidMount = () => {
-    this.setState({ loading: true });
+    this.setState({ status: this.NOTIFY.loading });
     BooksAPI.getAll().then((books) => {
       //TODO: check if getAll failed and inform the user
       this.loadBooks(books);
@@ -74,12 +81,12 @@ class BooksApp extends React.Component {
 
   render() {
 
-    const { books, loading } = this.state;
+    const { books, status } = this.state;
 
     return (
       <div className="app">
         <Route exact path="/" render={() => (
-          loading ?
+          status === this.NOTIFY.loading ?
             <div className="loading-books">Loading Books...</div>
           : <Library
               title={"MyReads"}
