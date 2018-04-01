@@ -9,15 +9,15 @@ import './App.css';
 class BooksApp extends React.Component {
 
   NOTIFY = {
-      standby: { id: 'stand-by', message: 'No requests being made'},
-      loadingBooks: { id: 'loading-books', message: 'Loading books'},
-      loadedBooks: { id: 'loaded-books', message: 'Books successfully loaded'},
-      fetchError: { id: 'fetch-error', message: 'Book fetch failed'},
-      updating: { id: 'updating-book', message: 'Updating Library'},
-      removedBook: { id: 'removed-book', message: 'Book removed from Library'},
-      addedBook:  { id: 'added-book', message: 'Book added to Library'},
-      updatedBook:  { id: 'updated-book', message: 'Book successfully moved'},
-      updateError: { id: 'update-error', message: 'Error updating library'}
+      standby: { type: 'no-notification', message: 'No requests being made'},
+      loadingBooks: { type: 'info', message: 'Loading books'},
+      loadedBooks: { type: 'success', message: 'Books successfully loaded'},
+      fetchError: { type: 'error', message: 'Book fetch failed!'},
+      updating: { type: 'info', message: 'Updating Library'},
+      removedBook: { type: 'success', message: 'Book removed from Library'},
+      addedBook:  { type: 'success', message: 'Book added to Library'},
+      updatedBook:  { type: 'success', message: 'Book successfully moved'},
+      updateError: { type: 'error', message: 'Error updating library'}
   };
 
   state ={
@@ -94,7 +94,6 @@ class BooksApp extends React.Component {
   );
     BooksAPI.getAll().then((books) => {
       this.loadBooks(books);
-      console.log('Books Loaded!');
     }).catch((error) => {
       this.setState({ status: this.NOTIFY.fetchError });
     });
@@ -118,7 +117,7 @@ class BooksApp extends React.Component {
         <Route path="/search" render={() => (
           <BookSearch
             onChangeShelf={this.updateLibrary}
-            books={this.state.books}
+            books={books}
           />
         )}/>
       </div>
