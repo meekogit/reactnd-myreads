@@ -41,15 +41,15 @@ class BooksApp extends React.Component {
   findBook = (book, shelf) => ( shelf && shelf.find((id) => (book.id === id)));
 
   removeBook = (book) => {
-    this.setState((state) => ({
-      books: state.books.filter((b) => (book.id !== b.id))
-    }));
+    this.setState((state) => ({ books: state.books.filter((b) => (book.id !== b.id)) }));
     this.setState({ status: this.NOTIFY.removedBook });
+    setTimeout(function() { this.setState({ status: this.NOTIFY.standby }); }.bind(this), 3000);
   };
 
   addBook = (book) => {
     this.setState((state) => ({ books: [...state.books, book] }));
     this.setState({ status: this.NOTIFY.addedBook });
+    setTimeout(function() { this.setState({ status: this.NOTIFY.standby }); }.bind(this), 3000);
   };
 
   updateBook = (book, shelf) => {
@@ -57,7 +57,8 @@ class BooksApp extends React.Component {
       books: state.books.map((b) => (book.id === b.id) ? {...book, shelf: shelf} : b )
     }));
     this.setState({ status: this.NOTIFY.updatedBook });
-  }
+    setTimeout(function() { this.setState({ status: this.NOTIFY.standby }); }.bind(this), 3000);
+  };
 
   updateLibrary = (book, shelf) => {
     this.setState({ status: this.NOTIFY.updating });
@@ -81,7 +82,10 @@ class BooksApp extends React.Component {
     });
   };
 
-  loadBooks = (books=[]) => this.setState({ books, status: this.NOTIFY.loadedBooks });
+  loadBooks = (books=[]) => {
+    this.setState({ books, status: this.NOTIFY.loadedBooks });
+    setTimeout(function() { this.setState({ status: this.NOTIFY.standby }); }.bind(this), 3000);
+  };
 
   componentDidMount = () => {
     this.setState(() => {
@@ -102,7 +106,7 @@ class BooksApp extends React.Component {
 
     return (
       <div className="app">
-        <Notify status={status} />
+        {(status === this.NOTIFY.standby) || <Notify status={status} />}
         <Route exact path="/" render={() => (
           <Library
           title={"MyReads"}
