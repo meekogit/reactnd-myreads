@@ -4,6 +4,7 @@ import escapeRegExp from 'escape-string-regexp';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import * as BooksAPI from './BooksAPI'
+import Notify from './Notify'
 
 class BookSearch extends React.Component {
 
@@ -12,10 +13,18 @@ class BookSearch extends React.Component {
     books: PropTypes.array
   }
 
+  NOTIFY = {
+      standby: { type: 'no-notification', message: 'No requests being made'},
+      searchingBooks: { type: 'spinner', message: 'Searching books'},
+      foundBooks: { type: 'success', message: 'Books successfully loaded'},
+      noBookFound: { type: 'no-results', message: 'No book found'},
+      fetchError: { type: 'error', message: 'Book fetch failed!'},
+  };
+
   state = {
     query: '',
     bookResults: [],
-    status: 'waiting'
+    status: this.NOTIFY.standby
   };
 
   updateQuery = (query) => {
@@ -23,26 +32,30 @@ class BookSearch extends React.Component {
     this.setState({ query: query.replace(/\s+/g, ' ') });
 
     if (query === '') {
-      this.setState({ bookResults: [], status: 'waiting' });
+      this.setState({ bookResults: [], status: this.NOTIFY.standby });
     } else {
-      this.setState({ status: 'searching' });
+      this.setState({ status: this.NOTIFY.searchingBooks });
       BooksAPI.search(query).then((response) => {
         this.setState((state, props) => {
 
           let filteredBooks = [];
-          let status = '';
-          // Check if query was cleared while fetching books
+          let status = this.NOTIFY.standby;
+
           if (state.query === '')
-            status = 'waiting';
+            status = this.NOTIFY.standby;
           else if (response.error) {
-            status = 'error';
+            status = this.NOTIFY.noBookFound;
           } else {
             filteredBooks = this.parseBooks(response, props.books);
-            status = 'ready';
+            status = this.NOTIFY.foundBooks;
+            status = {...status, message: `Found ${filteredBooks.length} books that match`};
+            setTimeout(function() { this.setState({ status: this.NOTIFY.standby }); }.bind(this), 3000);
           }
 
           return ({ bookResults: filteredBooks, status: status });
         });
+      }).catch((error) => {
+        this.setState({ status: this.NOTIFY.fetchError });
       });
     }
   };
@@ -72,9 +85,6 @@ class BookSearch extends React.Component {
     );
   };
 
-  searching = <div className="searching-animation">Searching...</div>;
-  noResultsFound = <div className="searching-animation">No Results</div>;
-
   render() {
     const { query, bookResults, status } = this.state;
     const onChangeShelf = this.props.onChangeShelf;
@@ -92,11 +102,8 @@ class BookSearch extends React.Component {
           </div>
         </div>
         <div className="search-books-results">
-          { (status === 'searching') ? (
-            this.searching
-          ) : (status === 'error') ? (
-            this.noResultsFound
-          ) : (
+          {(status === this.NOTIFY.standby) || <Notify status={status}/>}
+          {(status === this.NOTIFY.searchingBooks) || (
             <BooksGrid
               books={bookResults}
               onChangeShelf={onChangeShelf}
