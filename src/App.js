@@ -8,10 +8,15 @@ import './App.css';
 class BooksApp extends React.Component {
 
   NOTIFY = {
-      standby: { id: 'standby', message: 'No requests being made'},
-      loading: { id: 'loading', message: 'Loading books'},
-      loaded: { id: 'loaded', message: 'Books successfully loaded'},
+      standby: { id: 'stand-by', message: 'No requests being made'},
+      loadingBooks: { id: 'loading-books', message: 'Loading books'},
+      loadedBooks: { id: 'loaded-books', message: 'Books successfully loaded'},
       fetchError: { id: 'fetch-error', message: 'Book fetch failed'},
+      updating: { id: 'updating-book', message: 'Updating Library'},
+      removedBook: { id: 'removed-book', message: 'Book removed from Library'},
+      addedBook:  { id: 'added-book', message: 'Book added to Library'},
+      updatedBook:  { id: 'updated-book', message: 'Book successfully moved'},
+      updateError: { id: 'update-error', message: 'Error updating library'}
   };
 
   state ={
@@ -38,19 +43,23 @@ class BooksApp extends React.Component {
     this.setState((state) => ({
       books: state.books.filter((b) => (book.id !== b.id))
     }));
+    this.setState({ status: this.NOTIFY.removedBook });
   };
 
   addBook = (book) => {
     this.setState((state) => ({ books: [...state.books, book] }));
+    this.setState({ status: this.NOTIFY.addedBook });
   };
 
   updateBook = (book, shelf) => {
     this.setState((state) => ({
       books: state.books.map((b) => (book.id === b.id) ? {...book, shelf: shelf} : b )
     }));
+    this.setState({ status: this.NOTIFY.updatedBook });
   }
 
   updateLibrary = (book, shelf) => {
+    this.setState({ status: this.NOTIFY.updating });
     BooksAPI.update(book, shelf).then((response) => {
 
       const oldShelf = book.shelf;
@@ -64,18 +73,25 @@ class BooksApp extends React.Component {
       } else if (!foundInOdlShelf && foundInNewShelf){
         this.updateBook(book, shelf);
       } else {
-        console.log(`Error occurred while updating ${book.title}!`);
+        this.setState({ status: this.NOTIFY.updateError });
       }
+    }).catch((error) => {
+      this.setState({ status: this.NOTIFY.updateError });
     });
   };
 
-  loadBooks = (books=[]) => this.setState({ books, status: this.NOTIFY.loaded });
+  loadBooks = (books=[]) => this.setState({ books, status: this.NOTIFY.loadedBooks });
 
   componentDidMount = () => {
-    this.setState({ status: this.NOTIFY.loading });
+    this.setState(() => {
+      return { status: this.NOTIFY.loadingBooks };
+    }
+  );
     BooksAPI.getAll().then((books) => {
-      //TODO: check if getAll failed and inform the user
       this.loadBooks(books);
+      console.log('Books Loaded!');
+    }).catch((error) => {
+      this.setState({ status: this.NOTIFY.fetchError });
     });
   };
 
@@ -86,14 +102,12 @@ class BooksApp extends React.Component {
     return (
       <div className="app">
         <Route exact path="/" render={() => (
-          status === this.NOTIFY.loading ?
-            <div className="loading-books">Loading Books...</div>
-          : <Library
-              title={"MyReads"}
-              onChangeShelf={this.updateLibrary}
-              books={books}
-              shelves={this.shelves}
-            />
+          <Library
+          title={"MyReads"}
+          onChangeShelf={this.updateLibrary}
+          books={books}
+          shelves={this.shelves}
+          />
         )}/>
         <Route path="/search" render={() => (
           <BookSearch
