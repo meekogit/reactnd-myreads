@@ -1,6 +1,7 @@
 import React from 'react';
 import Library from './Library';
 import BookSearch from './BookSearch';
+import Notify from './Notify';
 import { Route } from 'react-router-dom';
 import * as BooksAPI from './BooksAPI';
 import './App.css';
@@ -101,6 +102,7 @@ class BooksApp extends React.Component {
 
     return (
       <div className="app">
+        <Notify status={status} />
         <Route exact path="/" render={() => (
           <Library
           title={"MyReads"}
