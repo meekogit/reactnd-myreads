@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import PropTypes from 'prop-types';
 
 function Notify (props) {
   const { type, message } = props.status;
@@ -19,6 +20,13 @@ function Notify (props) {
         )}
       </div>
   );
+}
+
+Notify.propTypes = {
+  status: PropTypes.shape({
+    type: PropTypes.string.isRequired,
+    message: PropTypes.string
+  })
 }
 
 function Watermark(props) {
