@@ -55,7 +55,7 @@ class BookSearch extends React.Component {
           return ({ bookResults: filteredBooks, status: status });
         });
       }).catch((error) => {
-        this.setState({ status: this.NOTIFY.fetchError });
+        this.setState({ bookResults: [], status: this.NOTIFY.fetchError });
       });
     }
   };
