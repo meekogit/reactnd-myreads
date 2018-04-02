@@ -4,7 +4,7 @@ import escapeRegExp from 'escape-string-regexp';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import * as BooksAPI from './BooksAPI'
-import Notify from './Notify'
+import Notify from './Notify';
 
 class BookSearch extends React.Component {
 
@@ -49,7 +49,10 @@ class BookSearch extends React.Component {
             filteredBooks = this.parseBooks(response, props.books);
             status = this.NOTIFY.foundBooks;
             status = {...status, message: `Found ${filteredBooks.length} books that match`};
-            setTimeout(function() { this.setState({ status: this.NOTIFY.standby }); }.bind(this), 3000);
+            this.timeoutHandler = setTimeout(() => {
+              this.setState({ status: this.NOTIFY.standby });
+              this.timeoutHandler = 0;
+            }, 3000);
           }
 
           return ({ bookResults: filteredBooks, status: status });
@@ -77,12 +80,19 @@ class BookSearch extends React.Component {
       let found = this.findBook(book.id, filteredLibrary);
       return found ? this.setShelf(book, found.shelf) : this.setShelf(book, 'none')
     });
-  }
+  };
 
   componentWillReceiveProps = (nextProps) => {
     this.setState((state, props) => (
       { bookResults: this.parseBooks(state.bookResults, nextProps.books) })
     );
+  };
+
+  componentWillUnmount = () => {
+    if (this.timeoutHandler) {
+      clearTimeout(this.timeoutHandler);
+      this.timeoutHandler = 0;
+    }
   };
 
   render() {
